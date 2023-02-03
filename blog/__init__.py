@@ -20,4 +20,7 @@ def create_app():
     def index():
         return "Hello to index page"
 
+    from . import db
+    db.init_app(app)
+
     return app

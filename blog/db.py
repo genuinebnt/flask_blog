@@ -1,4 +1,4 @@
-import sqlite3
+import sqlite3, click
 
 from flask import g, current_app
 
@@ -16,9 +16,29 @@ def get_db():
     return g.db
 
 
-def close_db():
+def close_db(e=None):
     # if no connection then db will be None
     db = g.pop('db', None)
 
     if db is not None:
         db.close()
+
+
+def init_db():
+    db = get_db()
+
+    with current_app.open_resource('schema.sql') as f:
+        db.executescript(f.read().decode('utf8'))
+
+
+# init_db_command is the function to initialize/reinitialize the database
+@click.command('init-db')
+def init_db_command():
+    init_db()
+    click.echo('Database initialized')
+
+
+# Since we are using a factory function we need to pass the app since it is not available globally
+def init_app(app):
+    app.teardown_appcontext(close_db)
+    app.cli.add_command(init_db_command)
