@@ -7,9 +7,10 @@ def create_app():
 
     app.config.from_mapping(
         SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'blog.sqlite')
+        DATABASE=os.path.join(app.instance_path, 'blog.sqlite')  # store db file in instance path
     )
 
+    # flask doesn't create instance_path automatically. It is required since db file will be stored there
     try:
         os.makedirs(app.instance_path)
     except OSError:
